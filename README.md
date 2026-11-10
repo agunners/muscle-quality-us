@@ -42,6 +42,11 @@ Every push runs the same install and tests on GitHub (`.github/workflows/tests.y
 - `docs/`: methods, specifications, operator checklists and runbooks.
 - `deploy/`: example systemd units and server configuration.
 
+## History
+
+This repository was developed privately from May 2026 (259 commits) and published on 10 November 2026 as a single commit.
+The private history is not published because it contains clinical identifiers; this repository's history starts here.
+
 ## Licence
 
 MIT, see `LICENSE`.
