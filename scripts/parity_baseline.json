@@ -1,0 +1,28 @@
+{
+  "checksums": {
+    "condition_models.json": "843972d661ec857d",
+    "per_study_cohort.csv": "f99ca4c3f694742b",
+    "study_codes.csv": "13fdd0e8c2ea25fc"
+  },
+  "roots": {
+    "decision_log": true,
+    "decision_log_3op": true,
+    "goruntuler_backup_frames": 330,
+    "model_local_bundles": 1,
+    "model_transport_bundles": 7,
+    "study_codes": true,
+    "transport_metadata": true
+  },
+  "studies": {
+    "cohort": {
+      "discovered": 272,
+      "new_round": 0,
+      "valid": 272
+    },
+    "local": {
+      "discovered": 130,
+      "new_round": 125,
+      "valid": 130
+    }
+  }
+}

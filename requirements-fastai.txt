@@ -1,0 +1,9 @@
+timm==1.0.22
+fastcore==1.8.16
+fastprogress==1.0.3
+fastdownload==0.0.7
+cloudpickle==3.1.2
+fasttransform==0.0.2
+plum-dispatch==2.6.0
+spacy==3.8.11
+## albumentations==2.0.8 already in the dgx requirements

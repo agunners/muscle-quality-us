@@ -1,0 +1,13 @@
+# Muscle Quality Labeling Tool — server runtime configuration
+
+transport_root: /srv/muscle_quality_labeling/transport
+study_code_map_path: /data/muscle_quality_labeling/private/study_codes.csv
+palette_path: /opt/muscle_quality_labeling/current/label_palette.json
+
+runtime_dir: /data/muscle_quality_labeling/runtime
+export_dir: /data/muscle_quality_labeling/exports
+
+session_warning_threshold: 60
+anchor_interval: 15
+phase_lock: true
+overlay_alpha: 0.5

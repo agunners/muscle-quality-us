@@ -1,0 +1,24 @@
+{
+  "_doc": "Config for scripts/sync_records.py — the Round-3 'triggers all' intake. Folder/sheet ids from the project's Drive folder; spec = Görüntü Alma Kılavuzu v7 EK-2.",
+  "drive": {
+    "goruntuler_folder": "REPLACE_WITH_YOUR_DRIVE_OR_SHEET_ID"
+  },
+  "sheets": {
+    "hasta_kayit": "REPLACE_WITH_YOUR_DRIVE_OR_SHEET_ID",
+    "records_list": "REPLACE_WITH_YOUR_DRIVE_OR_SHEET_ID",
+    "force_measures": "REPLACE_WITH_YOUR_DRIVE_OR_SHEET_ID"
+  },
+  "_operators_doc": "A SEED, not a whitelist. sync_records.resolve_operators() unions this with every subfolder of the Drive goruntuler folder — that layout is the real roster, so a new operator needs no edit here. Names are kept in the seed after their Drive folder goes away, so existing rows still validate; the seed is also the offline fallback when Drive is unreachable.",
+  "operators": [
+    "operator_a",
+    "operator_b"
+  ],
+  "owner_email": "you@example.com",
+  "software_version": "1.26.2.1/03jun26",
+  "name_order": "soyad_ad",
+  "cache_dir": "data/intake_cache",
+  "expected_artifacts": {
+    "main": 3,
+    "subcohort": 8
+  }
+}

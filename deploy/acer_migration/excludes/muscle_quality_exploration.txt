@@ -1,0 +1,8 @@
+# muscle_quality_exploration — LEAN excludes (NO inline comments; leading / = repo root)
+# April-09 archival snapshots (6.1G + 5.9G)
+/muscle_metrics_and_the_target_09Nisan/
+/muscle_metrics_and_the_target_09Nisan_ch/
+# regenerable inference outputs
+/runs/
+# KEPT: patents_discussion (IP/FTO), papers_and_more, MSK_research, lit_grounding,
+# rf_quality/ (bridge code), decision_log.csv, hasta_kayit_anonacl_claude.csv, .git

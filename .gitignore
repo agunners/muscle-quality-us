@@ -1,0 +1,73 @@
+.venv/
+transport/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.playwright-cli/
+output/
+runtime/
+exports/
+dist/
+tmp/
+*.egg-info/
+.DS_Store
+.streamlit/secrets.toml
+transport
+
+# Session scratch — harness scripts, screenshots, PHI-bearing sheet snapshots (cv_migration/) — never committed
+scratchpad/
+
+# Local-only runtime state (v3 preflight + run ledger)
+data/studies_root/
+# ingest-built flat symlink view for the viewer (PHI study names) — never committed
+data/studies_root_flat/
+data/runs.jsonl
+# canonical study registry — binds study_uid to the RAW study dirname (PHI); never committed
+data/study_registry.csv
+# QA analysis projections (build_qa_sheet.py) — carry raw study dirnames / frame
+# paths (PHI). The sheet tab stays PHI-safe; these two never leave the machine.
+data/qa_master.csv
+data/qa_frames.csv
+data/runs/
+data/runs_drafts/
+data/training_candidates/
+data/preflight/
+data/test_artifacts/
+
+# RF QA sweep-pool probe — intermediate crash-safe append logs + run logs
+# (~130 MB, regenerable; the consolidated parquet + manifest + readout are the
+# kept artifacts). Everything kept starts `qa_...`; intermediates start `_sweep_pool_`.
+data/cohort_stats/_sweep_pool_*
+
+# gws Drive export scratch — `gws drive files export` writes download.bin/.txt to cwd
+download.*
+data/intake_cache/
+data/intake_hold/
+data/datasheet_backups/
+# Pull-only local mirror of Drive goruntuler/ (PHI-bearing study names) — never committed
+data/goruntuler_mirror/
+# Study-consistency audit report (regenerable; carries PHI-bearing study names) — never committed
+data/audit/
+configs/decision_log.csv
+
+# regenerable per-capture segmentation cache (4MB+, keyed on segmenter bundle sha)
+scripts/analysis/cache/
+
+# doctors' grading pack (≈7 GB of renamed frames/videos; rebuilt by scripts/grading/build_grading_pack.py)
+data/grading_pack/
+
+# --- Public repository: kept on the machine, never committed (patient-level data, fitted models, private config) ---
+data/
+decision_log.csv
+decision_log.schema_backup.csv
+configs/study_codes.csv
+configs/round3_intake.json
+runs/
+model_/*.pkl
+model_/0319_*.json
+scripts/analysis/results/
+scripts/analysis/*/results/
+private/
+# the owner's clone links data/ to the private repo's folder: a symlink needs its own (slash-less) rule
+/data

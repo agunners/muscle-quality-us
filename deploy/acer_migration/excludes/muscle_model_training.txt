@@ -1,0 +1,26 @@
+# muscle_model_training — LEAN excludes (NO inline comments; leading / = repo root)
+#
+# REQUIRED — do NOT exclude:
+#   transport/  (4.0G) — PRODUCTION 5-fold segmenter bundles the app loads at boot
+#               (env.py:32 MODEL_DIR_TRANSPORT). THE model payload.
+#   artifacts/, annotations/, masks_roi/, src/, docs/, apps/, scripts/, requirements*, .git
+#   models/ (1.5G *.pth) = training checkpoints; kept for safety, not what the app loads.
+#
+# backups/old_transport_data: 16G dead weight
+/backups/
+#
+# OPTIONAL heavy TRAINING inputs (~3.5G) — excluded for a run-only Acer.
+# Comment OUT a line to include it if you'll RETRAIN on the Acer.
+/channels_roi/
+/harmonized/
+/DeepACSA_1/
+/DeepACSA_2/
+/DeepACSA_3/
+/DeepACSA_4/
+/DeepACSA_5/
+/notebooks/
+/kaggle_notebooks/
+/data/
+/PURE_DICOM_VALIDATION/
+/hacettepe_test_images*/
+/temporary_new_repo_will_be_removed/

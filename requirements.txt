@@ -1,0 +1,25 @@
+streamlit==1.52.2
+pytest==9.0.2
+scikit-image==0.26.0
+SimpleITK==2.5.3
+pydicom==3.0.1
+statsmodels==0.14.*
+pyyaml==6.0.3
+opencv-python-headless==4.12.0.88
+PyWavelets==1.9.0          # scripts/analysis/compute_features.py — 11 texture stems die silently without it
+playwright==1.59.0         # scripts/ui_screenshot_walkthrough.py (render+LOOK); setup_acer.sh installs the chromium binary
+
+# --- Imported by the code but previously only present through other packages or the workstation's own stack (10 Nov 2026).
+# Versions are the ones the test suite passes with. torch installs CPU-only from PyPI on Linux aarch64; on x86_64 the default
+# PyPI wheel is the CUDA build: add `--index-url https://download.pytorch.org/whl/cpu` to get the CPU one.
+numpy==2.1.0
+pandas==2.3.2
+scipy==1.17.1
+scikit-learn==1.7.1
+pillow==11.3.0
+matplotlib==3.10.6
+plotly==6.3.0
+joblib==1.5.3
+torch==2.9.0
+torchvision==0.24.0
+fastai==2.8.5

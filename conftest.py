@@ -1,0 +1,141 @@
+"""Tests that read the private study data (ultrasound studies, cohort tables, fitted models, the measurement ledger) are skipped
+when that data is absent, as in a fresh clone of the public repository. The list is every test that failed when the unedited code
+ran in a sealed container that could see no study data, plus those that fail only when the real data is present
+(10 Nov 2026, 114 tests). They run only when asked:
+`MM_PRIVATE_TESTS=1 python -m pytest` on a machine that has the data."""
+import os
+from pathlib import Path
+
+import pytest
+
+_ROOT = Path(__file__).resolve().parent
+_PRIVATE_DATA = ("data/cohort_stats", "data/kill_list.jsonl", "transport/transport_metadata.csv")
+NEEDS_PRIVATE_DATA = {
+    'tests/calibration/test_cohort_score_table.py::test_conditionally_absent_score_is_nan_not_crash',
+    'tests/calibration/test_cohort_score_table.py::test_score_key_maps_to_a_real_metadata_value',
+    'tests/calibration/test_cohort_score_table.py::test_score_rows_are_phi_clean',
+    'tests/calibration/test_cohort_score_table.py::test_score_rows_emitted_when_list_passed',
+    'tests/calibration/test_cohort_score_table.py::test_write_score_table_round_trips',
+    'tests/preflight/test_cohort_placement.py::test_acl762_star_overall_age',
+    'tests/preflight/test_cohort_placement.py::test_agz855_full_thickness_q50',
+    'tests/preflight/test_cohort_placement.py::test_agz855_star_is_not_measurable',
+    'tests/preflight/test_cohort_placement.py::test_cohort_box_graceful_on_unknown_feature_and_sex',
+    'tests/preflight/test_cohort_placement.py::test_cohort_box_n_matches_percentile',
+    'tests/preflight/test_cohort_placement.py::test_cohort_box_quantiles_are_ordered',
+    'tests/preflight/test_cohort_placement.py::test_condition_index_is_higher_is_better',
+    'tests/preflight/test_cohort_placement.py::test_condition_index_is_none_when_a_feature_is_missing',
+    'tests/preflight/test_cohort_placement.py::test_condition_index_orders_studies_the_score_reports_as_identical',
+    'tests/preflight/test_cohort_placement.py::test_missing_sex_returns_none',
+    'tests/preflight/test_cohort_reference_summary.py::test_every_served_population_reports_a_size_and_demographics[mixed]',
+    'tests/preflight/test_cohort_reference_summary.py::test_every_served_population_reports_a_size_and_demographics[new]',
+    'tests/preflight/test_cohort_reference_summary.py::test_every_served_population_reports_a_size_and_demographics[old]',
+    'tests/preflight/test_cohort_reference_summary.py::test_the_populations_actually_differ_on_the_axis_that_drives_the_swing',
+    'tests/preflight/test_cohort_reference_summary.py::test_the_summary_covers_every_feature_the_strip_renders',
+    'tests/preflight/test_cohort_source_selector.py::test_legacy_rollback_still_resolves',
+    'tests/preflight/test_cohort_source_selector.py::test_old_new_mixed_cohorts_load',
+    'tests/preflight/test_cohort_source_selector.py::test_placement_differs_by_population',
+    'tests/preflight/test_cohort_version_consistency.py::test_the_active_version_has_all_three_artifacts_on_disk',
+    'tests/preflight/test_cohort_version_consistency.py::test_the_served_model_was_fit_on_the_served_cohort',
+    'tests/preflight/test_condition_model_guards.py::test_a_study_with_no_femur_still_scores_on_the_served_recipe',
+    'tests/preflight/test_condition_model_guards.py::test_axes_follow_the_fallback_recipe_when_A_cannot_score',
+    'tests/preflight/test_condition_model_guards.py::test_axes_follow_the_served_recipe_not_the_frozen_axis_box',
+    'tests/preflight/test_condition_model_guards.py::test_axis_percentile_is_none_outside_the_frozen_axis_box_never_invented',
+    'tests/preflight/test_condition_model_guards.py::test_freeze_stamps_current_hash',
+    'tests/preflight/test_condition_model_guards.py::test_it_falls_back_to_C_when_the_served_recipe_cannot_score',
+    'tests/preflight/test_condition_model_guards.py::test_no_scoreable_data_headline_unavailable',
+    'tests/preflight/test_condition_model_guards.py::test_the_served_recipe_is_used_even_though_the_artifact_was_frozen_with_C',
+    'tests/preflight/test_feature_catalog.py::test_every_displayed_feature_has_a_cohort_column',
+    'tests/preflight/test_feature_compute.py::test_agz855_anchor_features_reproduce_decision_log',
+    'tests/preflight/test_force_card.py::test_artifact_and_receipts_share_the_substrate',
+    'tests/preflight/test_force_card.py::test_artifact_exists_and_is_self_consistent',
+    'tests/preflight/test_force_card.py::test_band_coverage_on_served_full_cards_is_sane',
+    'tests/preflight/test_force_card.py::test_concordance_verdicts_below_within_above',
+    'tests/preflight/test_force_card.py::test_cv_display_tiers_follow_the_ratified_policy',
+    'tests/preflight/test_force_card.py::test_envelope_refusal_names_the_feature_and_bound',
+    'tests/preflight/test_force_card.py::test_every_real_row_yields_a_legal_phi_free_payload',
+    'tests/preflight/test_force_card.py::test_fit_uids_are_a_subset_of_the_substrate',
+    'tests/preflight/test_force_card.py::test_full_state_band_matches_hand_computation',
+    'tests/preflight/test_force_card.py::test_held_row_serves_no_number_even_if_cells_carried_values',
+    'tests/preflight/test_force_card.py::test_ledger_held_rows_never_surface_a_value',
+    'tests/preflight/test_force_card.py::test_no_model_and_not_in_substrate_states',
+    'tests/preflight/test_force_card.py::test_non_finite_criterion_is_treated_as_absent',
+    'tests/preflight/test_force_card.py::test_should_render_gate_legacy_vs_v8',
+    'tests/preflight/test_force_card.py::test_stored_sample_predictions_reproduce',
+    'tests/preflight/test_force_card.py::test_unstable_tier_is_structurally_value_free',
+    'tests/preflight/test_live_channel_synthesis.py::test_live_channels_for_canonical_anchor_match_transport',
+    'tests/preflight/test_live_channel_synthesis.py::test_live_final_for_canonical_anchor_matches_transport',
+    'tests/preflight/test_live_channel_synthesis.py::test_live_pipeline_works_on_non_canonical_sweep_frame',
+    'tests/preflight/test_live_channel_synthesis.py::test_target_size_from_raw_png_returns_512x256_for_agz855',
+    'tests/preflight/test_materialize_studies.py::test_materialize_is_discoverable_with_depth_matched_modalities',
+    'tests/preflight/test_measurement_gate.py::test_real_ledger_parses_and_founding_line_is_intact',
+    'tests/preflight/test_measurement_gate.py::test_texture_withhold_constant_matches_ledger_feature_kills',
+    'tests/preflight/test_model_registry.py::test_default_is_the_canonical_pinned_bundle',
+    'tests/preflight/test_model_registry.py::test_finds_bundles_in_both_dirs',
+    'tests/preflight/test_preprocess_contract.py::test_canonical_bundle_loads_through_the_contract',
+    'tests/preflight/test_rf_reliability.py::test_withhold_makes_the_real_headline_unavailable_never_faked',
+    'tests/preflight/test_run_pipeline_persist.py::test_frame_set_signature_matches_input_signature',
+    'tests/preflight/test_run_pipeline_persist.py::test_persist_carries_image_quality_grade',
+    'tests/preflight/test_run_pipeline_persist.py::test_persist_draft_never_touches_ledger',
+    'tests/preflight/test_run_pipeline_persist.py::test_persist_ledger_appends_finalized',
+    'tests/preflight/test_run_pipeline_persist.py::test_persist_none_persists_nothing',
+    'tests/preflight/test_study_bootstrap.py::test_bootstrap_default_source_is_old_not_legacy',
+    'tests/preflight/test_study_discovery.py::test_backup_cohort_demographics_filled_from_decision_log',
+    'tests/preflight/test_study_discovery.py::test_backup_cohort_surfaces_272_alive',
+    'tests/preflight/test_study_discovery.py::test_cohort_studies_discover_valid',
+    'tests/preflight/test_study_discovery.py::test_discover_all_merges_root_and_backup',
+    'tests/preflight/test_study_discovery.py::test_list_frame_bases_picks_only_bare_jpg',
+    'tests/preflight/test_study_metadata.py::test_pseudonym_robust_when_date_first_has_no_id',
+    'tests/preflight/test_trust_strip.py::test_ledger_verdict_suffix_uses_the_real_ledger',
+    'tests/test_cohort_dot_strip.py::test_cohort_points_threshold',
+    'tests/test_config.py::test_yaml_loads_clean_slate_runtime_paths',
+    'tests/test_data.py::test_build_manifest_real_dual_comorbidity_row',
+    'tests/test_data.py::test_build_manifest_real_mixed_suffix_row',
+    'tests/test_data.py::test_real_corpus_incomplete_cases_remain_partial[0000004_anonaaa_h_27e]',
+    'tests/test_data.py::test_real_corpus_incomplete_cases_remain_partial[0000006_anonacd_m_50e]',
+    'tests/test_data.py::test_real_corpus_incomplete_cases_remain_partial[0000048_anonaas_m_E_176_85]',
+    'tests/test_qmt_regressions.py::test_pdf_regression_proxy_star_present_for_fallback',
+    'tests/test_qmt_regressions.py::test_pdf_regression_standard_qmt_case_remains_stable',
+    'tests/test_qmt_regressions.py::test_pdf_regression_strict_policy_keeps_relaxed_only_case_as_fallback',
+    'tests/test_qmt_regressions.py::test_pdf_regression_vi_and_qmt_columns_can_differ',
+    'tests/test_qmt_regressions.py::test_pdf_regressions_true_qmt_column_matches_annotation_columns[0000032-anonaaf]',
+    'tests/test_qmt_regressions.py::test_pdf_regressions_true_qmt_column_matches_annotation_columns[0000134-anonaaf]',
+    'tests/ui/test_appflow.py::test_app_boots_to_study_selector',
+    'tests/ui/test_appflow.py::test_drop_frame_captures_structured_reason_codes',
+    'tests/ui/test_appflow.py::test_lock_blocked_until_every_frame_decided',
+    'tests/ui/test_appflow.py::test_make_repr_auto_couples_usable_and_use_for_analysis',
+    'tests/ui/test_appflow.py::test_n4_lifecycle_draft_accept_stale_cache_afresh',
+    'tests/ui/test_appflow.py::test_n5_study_bootstrap_flow_after_accept',
+    'tests/ui/test_appflow.py::test_qa_read_surfaces_render_on_assessment',
+    'tests/ui/test_appflow.py::test_repr_excluded_from_analysis_surfaces_warning',
+    'tests/ui/test_appflow.py::test_usable_yes_cascades_use_for_analysis_default_to_yes',
+    'tests/ui/test_force_panel.py::test_envelope_refusal_says_why_and_keeps_measured',
+    'tests/ui/test_force_panel.py::test_full_state_shows_measured_expected_and_concordance',
+    'tests/ui/test_force_panel.py::test_held_state_names_the_gate_and_shows_no_number',
+    'tests/ui/test_force_panel.py::test_marginal_cv_flag_and_above_verdict',
+    'tests/ui/test_force_panel.py::test_no_session_state',
+    'tests/ui/test_force_panel.py::test_not_in_substrate_points_at_ingest',
+    'tests/ui/test_force_panel.py::test_unstable_cv_withholds_the_value_but_keeps_the_band',
+    'tests/ui/test_p03_picker_flow.py::test_pervasively_dark_study_demotes_the_per_frame_flood',
+    'tests/ui/test_p03_picker_flow.py::test_picker_drops_ai_suggests_as_repr_after_selecting_a_frame',
+    'tests/ui/test_p03_picker_flow.py::test_picker_recommends_top3_largest_clean_before_selection',
+    'tests/ui/test_p04_review_flow.py::test_dark_frame_review_drops_the_questionnaire_and_gate_is_free',
+    'tests/ui/test_p05_card.py::test_formula_reveal_shows_formula_agreement_and_claim_boundary',
+    'tests/ui/test_p05_card.py::test_rater_chip_shows_consensus_grade_and_agreement',
+    'tests/ui/test_p4x_calibration.py::test_p4x_change_mind_records_the_flip',
+    'tests/ui/test_p4x_calibration.py::test_p4x_exit_returns_to_review',
+    'tests/ui/test_p4x_calibration.py::test_p4x_label_persists_through_blind_then_reveal',
+    'tests/ui/test_p4x_calibration.py::test_p4x_silence_records_nothing',
+}
+
+
+def _private_data_present() -> bool:
+    return all((_ROOT / p).exists() for p in _PRIVATE_DATA)
+
+
+def pytest_collection_modifyitems(config, items):
+    if os.environ.get("MM_PRIVATE_TESTS") == "1" and _private_data_present():
+        return
+    skip = pytest.mark.skip(reason="needs the private study data (not distributed with the public repository)")
+    for item in items:
+        if item.nodeid in NEEDS_PRIVATE_DATA:
+            item.add_marker(skip)

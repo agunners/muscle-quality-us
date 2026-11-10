@@ -1,0 +1,17 @@
+[Unit]
+Description=Kontrol watcher: operator study self-check (writes Kontrol Sonucu per filled row)
+After=network.target
+
+[Service]
+Type=simple
+# Set to the DGX user that owns the gws credentials (the same user sync_records runs as).
+# Ignored for a per-user install (systemctl --user), which already runs as that user.
+User=
+WorkingDirectory=/home/akadir/dev/muscle_mania
+Environment=PYTHONPATH=/home/akadir/dev/muscle_mania/scripts
+ExecStart=/home/akadir/dev/muscle_mania/.venv/bin/python scripts/check_studies.py --watch --apply
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

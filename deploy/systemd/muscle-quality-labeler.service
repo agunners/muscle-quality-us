@@ -1,0 +1,16 @@
+[Unit]
+Description=Muscle Quality Labeler Streamlit App
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/muscle_quality_labeling/current
+Environment=MUSCLE_QUALITY_CONFIG_PATH=/etc/muscle_quality_labeling/labeling.yaml
+ExecStart=/opt/muscle_quality_labeling/current/.venv/bin/streamlit run labeling_app/app.py --server.port 8503 --server.address 172.18.0.1 --server.headless true
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

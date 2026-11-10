@@ -1,0 +1,10 @@
+{
+  "stem": "0319_voi_hist_clahe_45seed_native_512x256_v5___300_samples____fold4_DeepLabV3Plus_timm-efficientnet-b1",
+  "sha256": "114bcb516288df9598b43821d2ec19b5d130c3565268f0751b9f4f5be17b957d",
+  "rebase_version": "1.1",
+  "resize_to": [512, 256],
+  "rrc_size": [384, 192],
+  "why": "The native 512x256 fold4 segmenter the v1.1 cohort ruler AND the frozen condition model were computed on (see data/cohort_stats/rebase_provenance.json). Live serving MUST segment on this exact bundle, or every live measurement is placed against a cohort cut with a different ruler -- the train/serve preprocessing skew the v1.1 arc removed. This pointer, sha-guarded, is what makes 'serving == cohort' provable rather than accidental.",
+  "supersedes": "mtime-newest selection, which was 0329_...padded_800x640 fold4 (sha dad5e1d5...) -- a padded bundle that aspect-distorts + center-crops the fat anchor.",
+  "change_policy": "Repoint ONLY as part of a coordinated cohort re-base + condition-model refit (bump rebase_version). Never hand-edit to a newer bundle without re-cutting the cohort."
+}

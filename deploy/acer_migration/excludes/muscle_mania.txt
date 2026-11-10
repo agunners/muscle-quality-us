@@ -1,0 +1,8 @@
+# muscle_mania — LEAN excludes (rsync --exclude-from: NO inline comments; leading / = repo root)
+# intake_cache 5.2G — re-pull zips from Drive via gws on the Acer
+/data/intake_cache/
+# runtime — regenerated at app startup
+/runtime/
+/download.txt
+# KEPT (not excluded): data/studies_root (PHI), data/goruntuler_mirror,
+# data/cohort_stats (frozen cohort), data/calibration_labels.jsonl, transport (symlink), .git

@@ -1,0 +1,15 @@
+# Local-first (v2.1, option C — local only until post-Friday public-deploy revives).
+# The legacy [browser] block that pointed at muscle-quality.example.com:443
+# (Hetzner+Traefik production subdomain) was stripped 2026-05-12 because it caused
+# Streamlit's terminal output to advertise the wrong URL to the operator.
+# When public redeploy revives, reconstruct from docs/DEPLOYMENT_RUNBOOK.md.
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
+
+[server]
+enableCORS = true
+enableXsrfProtection = true

@@ -1,0 +1,17 @@
+# Muscle Quality Labeling Tool — clean-slate runtime configuration
+
+# Required: absolute or relative path to the transport/ folder
+transport_root: ../transport
+
+# Required: persisted one-time pseudonym mapping
+study_code_map_path: study_codes.csv
+
+# Runtime/output paths
+runtime_dir: ../runtime
+export_dir: ../exports
+
+# Session behaviour
+session_warning_threshold: 60
+anchor_interval: 15
+phase_lock: true
+overlay_alpha: 0.5
